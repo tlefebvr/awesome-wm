@@ -1264,6 +1264,26 @@ table.insert(steps, function()
     return true
 end)
 
+-- Check that a timeout value was set up for non-legacy notification
+table.insert(steps, function()
+    assert(naughty.has_display_handler == true)
+
+    naughty.config.preset.normal.timeout = 24
+    naughty.config.defaults.timeout = 42
+    local n = naughty.notification {
+        message = "bar",
+    }
+
+    -- Normal preset timeout value should be used
+    assert(n._private.timeout == 24)
+
+    naughty.config.preset.normal.timeout = nil
+    -- Default timeout value should be used
+    assert(n._private.timeout == 42)
+
+    return true
+end)
+
 -- Make sure it isn't possible to remove default variables (#3145).
 table.insert(steps, function()
     naughty.config.defaults = {fake_variable = 24}
